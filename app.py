@@ -1,6 +1,6 @@
 import pyodbc
-import base64
 import ConfigParser
+import pandas as pd
 def do_connect():
     config = ConfigParser.ConfigParser()
     config.read("config.ini")
@@ -9,8 +9,9 @@ def do_connect():
     password = config.get("parameters", "password")
     cnxn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE=Dynamics;UID='+username+';PWD='+password+'')
     users_query = cnxn.cursor()
-    users_query.execute("select USERID from SY01400")
-    data_users = users_query.fetchall()
+    df = pd.read_sql_query("exec AccountsPostingType", cnxn)
+    writer = pd.ExcelWriter('foo.xlsx')
+    df.to_excel(writer, sheet_name='bar')
+    writer.save()
     users_query.close()
-    print data_users
 do_connect()
