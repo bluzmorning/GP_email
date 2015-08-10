@@ -39,5 +39,3 @@ def do_sendemail():
     smtp = SMTP("iplanet", 25)
     smtp.ehlo()
     smtp.sendmail(msg['From'], recipients, msg.as_string())
-do_connect()
-do_sendemail()
