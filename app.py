@@ -15,13 +15,12 @@ def do_connect():
     password = config.get("parameters", "password")
     cnxn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE=Dynamics;UID='+username+';PWD='+password+'')
     users_query = cnxn.cursor()
-    df = pd.read_sql_query("exec FSSG_wrong_accounttype_report", cnxn, index_col=None)
+    df = pd.read_sql_query("exec FSSG_wrong_accounttype_report", cnxn)
     writer = pd.ExcelWriter('wrong_accounts_'+today+'.xlsx')
-    df.to_excel(writer, sheet_name='account codes in GP')
-    writer.sheets['account codes in GP'].column_dimensions['A'].width = 10
-    writer.sheets['account codes in GP'].column_dimensions['B'].width = 50
+    df.to_excel(writer, sheet_name='account codes in GP', index=False)
+    writer.sheets['account codes in GP'].column_dimensions['A'].width = 50
+    writer.sheets['account codes in GP'].column_dimensions['B'].width = 20
     writer.sheets['account codes in GP'].column_dimensions['C'].width = 20
-    writer.sheets['account codes in GP'].column_dimensions['D'].width = 20
     writer.save()
     users_query.close()
 def do_sendemail():
@@ -30,7 +29,7 @@ def do_sendemail():
     msg = MIMEMultipart()
     recipients = config.get("parameters", "recipients")
     recipients1 = recipients.split(',')
-    msg['Subject'] = "Wrong accounts type in Dynamics GP (monthly report)"
+    msg['Subject'] = "Wrong account type in Dynamics GP (monthly report)"
     msg['From'] = "FinancialSystemsSupportGroup@NetCracker.com"
     msg['To'] = ", ".join(recipients1)
     msg.preamble = 'Multipart massage.\n'
